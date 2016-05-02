@@ -28,6 +28,7 @@ const data = `Employee ID|Employee Name|Termination Date|Phone Number
 abc|Jangle|12/09/16|123-456-7890`
 
 // it seems you have to decode the privatekey before you can use it in encryption
+// at the moment when i try to get rid of this empty then() it breaks
 openpgp.decryptKey({privateKey: privateKeys[0], passphrase: password}).then(decKey => {
   // console.log(decKey)
 }).then(decryptionKey => {
@@ -40,6 +41,13 @@ openpgp.decryptKey({privateKey: privateKeys[0], passphrase: password}).then(decK
 }).catch(error => {
   console.log('decryptKey error', error)
 })
+
+// this doesn't work for some reason
+// openpgp.decryptKey({privateKey: privateKeys[0], passphrase: password}).then(decryptionKey => {
+//   openpgp.encrypt({privateKeys: decryptionKey, publicKeys: publicKeys, data: data}).then(encrypted => {
+//     fs.writeFileSync(encryptedFilePath, encrypted.data)
+//   }).catch(error => console.log('encryption error', error))
+// }).catch(error => console.log('decryptKey error', error))
 
 // text of encrypted file to decrypt
 const encryptedFile = fs.readFileSync(encryptedFilePath, utf8)
