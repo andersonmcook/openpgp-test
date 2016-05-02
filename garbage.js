@@ -1,38 +1,33 @@
 'use strict'
+// boilerplate-seeming stuff
 const openpgp = require('openpgp')
 const fs = require('fs')
 openpgp.initWorker({path:'./node_modules/openpgp/dist/openpgp.worker.js'})
 openpgp.config.aead_protect = true
 
-var options, encrypted;
-
-// var pubkey = '-----BEGIN PGP PUBLIC KEY BLOCK ... END PGP PUBLIC KEY BLOCK-----';
-// var privkey = '-----BEGIN PGP PRIVATE KEY BLOCK ... END PGP PRIVATE KEY BLOCK-----';
+// filepaths
 const publicFilePath = './keys/public.asc'
 const privateFilePath = './keys/private.asc'
 const encryptedFilePath = './files/test2.txt.pgp'
 const decryptedFilePath = './files/test2.txt'
-const encoding = {encoding: 'utf-8'}
+// since default encoding is null and we want to be able to read words and not buffers
+const utf8 = {encoding: 'utf-8'}
+// secret password
 const password = 'test'
-
-const pubkey = fs.readFileSync(publicFilePath, encoding)
-const privkey = fs.readFileSync(privateFilePath, encoding)
-
-options = {
-    data: 'Hello, World!',                             // input as String (or Uint8Array)
-    publicKeys: openpgp.key.readArmored(pubkey).keys,  // for encryption
-    privateKeys: openpgp.key.readArmored(privkey).keys // for signing (optional)
-};
-
+// text of our keys
+const pubkey = fs.readFileSync(publicFilePath, utf8)
+const privkey = fs.readFileSync(privateFilePath, utf8)
+// openpgp reading of our keys
 const privateKeys = openpgp.key.readArmored(privkey).keys
 const publicKeys = openpgp.key.readArmored(pubkey).keys
+// data to encrypt
 const data = `Employee ID|Employee Name|Termination Date|Phone Number
 123|Bob|12/19/16|123-456-7890
 456|Mangle|12/19/16|123-456-7890
 789|Rick|12/29/16|123-456-7890
 abc|Jangle|12/09/16|123-456-7890`
-// console.log(privateKeys[0])
 
+// it seems you have to decode the privatekey before you can use it in encryption
 openpgp.decryptKey({privateKey: privateKeys[0], passphrase: password}).then(decKey => {
   // console.log(decKey)
 }).then(decryptionKey => {
@@ -42,17 +37,17 @@ openpgp.decryptKey({privateKey: privateKeys[0], passphrase: password}).then(decK
   }).catch(error => {
     console.log('encryption error', error)
   })
-})
-.catch(error => {
+}).catch(error => {
   console.log('decryptKey error', error)
 })
 
-const encryptedFile = fs.readFileSync(encryptedFilePath, encoding)
+// text of encrypted file to decrypt
+const encryptedFile = fs.readFileSync(encryptedFilePath, utf8)
 
+//decrypt pgp file
 openpgp.decrypt({publicKeys: publicKeys, message: openpgp.message.readArmored(encryptedFile), passphrase: password, privateKey: privateKeys[0]}).then(plaintext => {
-  console.log('plaintext', plaintext)
+  // console.log('plaintext', plaintext)
   fs.writeFileSync(decryptedFilePath, plaintext.data)
 }).catch(error => {
   console.log('decryption error', error)
 })
-//Error: Error encrypting message: Private key is not decrypted.
