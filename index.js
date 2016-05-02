@@ -7,6 +7,7 @@ openpgp.config.aead_protect = true
 const publicFilePath = './keys/public.asc'
 const privateFilePath = './keys/private.asc'
 const encryptedFilePath = './files/test.txt.pgp'
+const decryptedFilePath = './files/test.txt'
 const encoding = {encoding: 'utf-8'}
 const password = 'test'
 
@@ -48,7 +49,8 @@ const encryptedFile = fs.readFileSync(encryptedFilePath, encoding)
 // openpgp.decrypt({publicKeys: publicKeys, privateKeys: privateKeys, message: openpgp.message.readArmored(encryptedFile), password: password}).then(function (plaintext) {
 // openpgp.decrypt({publicKeys: publicKeys, message: openpgp.message.readArmored(encryptedFile), password: password}).then(plaintext => {
 openpgp.decrypt({message: openpgp.message.readArmored(encryptedFile), password: password}).then(plaintext => {
-  console.log('plaintext', plaintext)
+  // console.log('plaintext', plaintext)
+  fs.writeFileSync(decryptedFilePath, plaintext.data)
 }).catch(error => {
   console.log('decryption error', error)
 })
