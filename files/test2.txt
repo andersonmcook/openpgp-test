@@ -1,0 +1,5 @@
+Employee ID|Employee Name|Termination Date|Phone Number
+123|Bob|12/19/16|123-456-7890
+456|Mangle|12/19/16|123-456-7890
+789|Rick|12/29/16|123-456-7890
+abc|Jangle|12/09/16|123-456-7890
